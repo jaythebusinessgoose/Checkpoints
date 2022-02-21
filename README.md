@@ -10,9 +10,14 @@ Use the tile code "checkpoint" to add a checkpoint to a level. ONLY ADD CHECKPOI
 
 ## Setup
 
-To avoid issues, activate the checkpoints when loading a level and deactivate when unloading:
+To use checkpoints in a level, import the checkpoints module and call the function to create an instance.
+When loading the level, activate the instance and when unloading the level, deactivate the instance. If this is not
+performed properly, checkpoints may be loaded for the wrong level.
 
 ```
+local Checkpoints = require('Checkpoints/checkpoints')
+local checkpoints = Checkpoints()
+
 dwelling.load_level = function()
   checkpoints.activate()
 end
@@ -53,6 +58,9 @@ CHECKPOINT_STYLE = {
 To use the Eye of Anubis style:
 
 ```
+local Checkpoints = require('Checkpoints/checkpoints')
+local checkpoints = Checkpoints()
+
 local CHECKPOINT_STYLE = checkpoints.CHECKPOINT_STYLE
 
 checkpoints.set_style(CHECKPOINT_STYLE.EYE_OF_ANUBIS)
@@ -69,6 +77,9 @@ Thanks to Gugubo for creating this style!
 To use the Funky style:
 
 ```
+local Checkpoints = require('Checkpoints/checkpoints')
+local checkpoints = Checkpoints()
+
 local CHECKPOINT_STYLE = checkpoints.CHECKPOINT_STYLE
 
 checkpoints.set_style(CHECKPOINT_STYLE.FUNKY)
@@ -89,6 +100,9 @@ CHECKPOINT_STYLE.CUSTOM
 Using this style, you can pass two textures to be used as the active and inactive flags. The animation frame will always be 0, so make sure your custom texture accounts for that.
 
 ```
+local Checkpoints = require('Checkpoints/checkpoints')
+local checkpoints = Checkpoints()
+
 local CHECKPOINT_STYLE = checkpoints.CHECKPOINT_STYLE
 
 checkpoints.set_style(CHECKPOINT_STYLE.CUSTOM, my_active_texture, my_inactive_texture)
@@ -101,6 +115,9 @@ In order to save checkpoints, set the `checkpoint_activate_callback` to a functi
 NOTE: Adding a checkpoint to the back layer currently doesn't work; the parameter for layer is optimistic.
 
 ```
+local Checkpoints = require('Checkpoints/checkpoints')
+local checkpoints = Checkpoints()
+
 checkpoints.checkpoint_activate_callback(function(x, y, layer, time)
     save_checkpoint({
         position = {
