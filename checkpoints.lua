@@ -74,7 +74,9 @@ local function Checkpoints()
         active_location = nil,
         callback =  nil,
         active = false,
-        time = nil
+        time = nil,
+        clear_on_transition = true,
+        apply_player_position = true,
     }
 
     local function set_directory(directory)
@@ -94,6 +96,13 @@ local function Checkpoints()
         active_texture = nil
     end
 
+    local function set_clear_on_transition(clear)
+        checkpoint_state.clear_on_transition = clear
+    end
+
+    local function set_apply_player_position(apply)
+        checkpoint_state.apply_player_position = apply
+    end
 
     local function checkpoint_activate_callback(callback)
         checkpoint_state.callback = callback
@@ -128,6 +137,7 @@ local function Checkpoints()
         checkpoint.flags = clr_flag(checkpoint.flags, ENT_FLAG.THROWABLE_OR_KNOCKBACKABLE)
         checkpoint.flags = set_flag(checkpoint.flags, ENT_FLAG.NO_GRAVITY)
         checkpoint.flags = clr_flag(checkpoint.flags, ENT_FLAG.ENABLE_BUTTON_PROMPT)
+        checkpoint:set_draw_depth(33)
         checkpoint:set_texture(is_active and active_checkpoint_texture() or inactive_checkpoint_texture())
         checkpoint.animation_frame = 0
 
@@ -160,12 +170,15 @@ local function Checkpoints()
         flag.flags = clr_flag(flag.flags, ENT_FLAG.THROWABLE_OR_KNOCKBACKABLE)
         flag.flags = set_flag(flag.flags, ENT_FLAG.NO_GRAVITY)
         flag.flags = clr_flag(flag.flags, ENT_FLAG.ENABLE_BUTTON_PROMPT)
+        flag:set_draw_depth(33)
         flag:set_texture(active_checkpoint_texture())
         flag.animation_frame = 0
     end
 
     set_pre_tile_code_callback(function(x, y, layer)
+        print('checkpoint tilecode!')
         if not checkpoint_state.active then return false end
+        print('is active')
         spawn_checkpoint(x, y, layer)
         return true
     end, "checkpoint")
@@ -178,6 +191,7 @@ local function Checkpoints()
 
     set_callback(function()
         if not checkpoint_state.active then return end
+        if not checkpoint_state.apply_player_position then return end
         if state.screen == 13 then return end
         if checkpoint_state.active_location then
             local x, y = checkpoint_state.active_location.x, checkpoint_state.active_location.y
@@ -204,6 +218,7 @@ local function Checkpoints()
 
     set_callback(function()
         if not checkpoint_state.active then return end
+        if not checkpoint_state.clear_on_transition then return end
         clear_checkpoint()
     end, ON.TRANSITION)
 
@@ -219,6 +234,14 @@ local function Checkpoints()
         checkpoint_state.active = false
     end
 
+    local function reset()
+        for _, checkpoint in pairs(checkpoint_state.checkpoints) do
+            clear_callback(checkpoint.collision)
+        end
+        checkpoint_state.checkpoints = {}
+        clear_checkpoint()
+    end
+
     return {
         spawn_checkpoint = spawn_checkpoint,
         spawn_checkpoint_flag = spawn_checkpoint_flag,
@@ -228,6 +251,11 @@ local function Checkpoints()
         set_style = set_style,
         CHECKPOINT_STYLE = CHECKPOINT_STYLE,
         clear_checkpoint = clear_checkpoint,
+        set_apply_player_position = set_apply_player_position,
+        set_clear_on_transition = set_clear_on_transition,
+        active_texture = active_checkpoint_texture,
+        inactive_texture = inactive_checkpoint_texture,
+        reset = reset,
 
         activate = activate,
         deactivate = deactivate,
