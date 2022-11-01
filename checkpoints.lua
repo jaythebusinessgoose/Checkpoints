@@ -176,9 +176,7 @@ local function Checkpoints()
     end
 
     set_pre_tile_code_callback(function(x, y, layer)
-        print('checkpoint tilecode!')
         if not checkpoint_state.active then return false end
-        print('is active')
         spawn_checkpoint(x, y, layer)
         return true
     end, "checkpoint")
@@ -207,6 +205,7 @@ local function Checkpoints()
     set_callback(function()
         if not checkpoint_state.active then return end
         if state.screen == SCREEN.TRANSITION then return end
+        if not checkpoint_state.apply_player_position then return end
         if checkpoint_state.active_location then
             state.time_level = checkpoint_state.active_location.time
         end
@@ -235,9 +234,6 @@ local function Checkpoints()
     end
 
     local function reset()
-        for _, checkpoint in pairs(checkpoint_state.checkpoints) do
-            clear_callback(checkpoint.collision)
-        end
         checkpoint_state.checkpoints = {}
         clear_checkpoint()
     end
