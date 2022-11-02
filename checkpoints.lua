@@ -227,13 +227,16 @@ local function Checkpoints()
 
     local function deactivate()
         for _, checkpoint in pairs(checkpoint_state.checkpoints) do
-            clear_callback(checkpoint.collision)
+            clear_entity_callback(checkpoint.checkpoint.uid, checkpoint.collision)
         end
         checkpoint_state.checkpoints = {}
         checkpoint_state.active = false
     end
 
     local function reset()
+        for _, checkpoint in pairs(checkpoint_state.checkpoints) do
+            clear_entity_callback(checkpoint.checkpoint.uid, checkpoint.collision)
+        end
         checkpoint_state.checkpoints = {}
         clear_checkpoint()
     end
