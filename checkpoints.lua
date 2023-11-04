@@ -183,14 +183,14 @@ local function Checkpoints()
 
     set_pre_tile_code_callback(function(x, y, layer)
         if not checkpoint_state.active then return false end
-        if state.screen == 13 then return false end
+        if state.screen == SCREEN.TRANSITION then return false end
         if checkpoint_state.active_location then return true end
     end, "entrance")
 
     set_callback(function()
         if not checkpoint_state.active then return end
         if not checkpoint_state.apply_player_position then return end
-        if state.screen == 13 then return end
+        if state.screen == SCREEN.TRANSITION then return end
         if checkpoint_state.active_location then
             local x, y = checkpoint_state.active_location.x, checkpoint_state.active_location.y
             state.level_gen.spawn_x = x
