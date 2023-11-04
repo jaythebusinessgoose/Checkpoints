@@ -221,8 +221,11 @@ local function Checkpoints()
         clear_checkpoint()
     end, ON.TRANSITION)
 
-    local function activate()
-        checkpoint_state.active = true
+    local function activate(position)
+      if position then
+        activate_checkpoint_at(position.x, position.y, position.layer, position.time)
+      end
+      checkpoint_state.active = true
     end
 
     local function deactivate()
